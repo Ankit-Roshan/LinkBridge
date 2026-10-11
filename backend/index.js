@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express")
 
 const app = express()
@@ -16,3 +17,6 @@ const startServer = async () => {
 };
 
 startServer();
+
+const userRoutes = require("./router/userRoutes")
+app.use("/users",userRoutes)
