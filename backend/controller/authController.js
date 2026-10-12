@@ -45,44 +45,49 @@ const registerUser = asyncHandler(async (req, res) => {
 
 })
 
-const loginUser = asyncHandler(async (req,res)=>{
-    const{email,password} = req.body
+const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
 
-    const user = await User.findOne({email})
-    
-    if(!user){
-        throw new ApiError(401,"user nahi mila")
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+        email: normalizedEmail
+    });
+
+    if (!user) {
+        throw new ApiError(401, "user nahi mila")
     }
-    const checkPassword = await bcrypt.compare(password,user.password)
+    const checkPassword = await bcrypt.compare(password, user.password)
 
-    if(!checkPassword){
-        throw new ApiError(401,"invalid Credintials")
+    if (!checkPassword) {
+        throw new ApiError(401, "invalid Credintials")
     }
-const token = await jwt.sign({
-     userId: user.id,
-     role:user.role
-},
-process.env.JWT_SECRET,
-{
-   expiresIn: "1h" 
-}
-)
+    const token = await jwt.sign({
+        userId: user.id,
+        role: user.role
+    },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "1h"
+        }
+    )
 
-if(!token){
-        throw new ApiError(500,"Server ki galti")
-}
+    if (!token) {
+        throw new ApiError(500, "Server ki galti")
+    }
 
-res.status(200).json({
-    message:"Login successfull",
-    token
+    res.status(200).json({
+        message: "Login successfull",
+        token
+    })
+
 })
 
-})
 
 
 
 
-
-module.exports = {registerUser,
-                    loginUser
+module.exports = {
+    registerUser,
+    loginUser
 }
